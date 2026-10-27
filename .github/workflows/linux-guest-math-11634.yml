@@ -1,0 +1,22 @@
+name: Linux guest_math at 11634's head
+on:
+  push:
+    branches: [ci/linux-guest-math-11634]
+jobs:
+  guest-math:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ninja-build libx11-dev libxext-dev libxrandr-dev libasound2-dev libpulse-dev
+      - run: |
+          uname -m
+          g++ --version
+          git log -2 --format='%H %s'
+      - run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++
+      - run: cmake --build build --target guest_math_tests --parallel 4
+      - run: ctest --test-dir build -R '^guest_math$' --output-on-failure --repeat until-fail:3
