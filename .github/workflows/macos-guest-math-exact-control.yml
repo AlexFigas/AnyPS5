@@ -1,0 +1,20 @@
+name: macOS AppleClang guest_math_exact control
+on:
+  push:
+    branches: [ci/macos-guest-math-exact-11283-control]
+jobs:
+  guest-math-exact:
+    runs-on: macos-15-intel
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - run: brew install ninja
+      - run: |
+          uname -m
+          c++ --version
+          git log -2 --format='%H %s'
+      - run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+      - run: cmake --build build --target guest_math_exact_tests --parallel 4
+      - run: ctest --test-dir build -R '^guest_math_exact$' --output-on-failure
