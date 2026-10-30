@@ -479,6 +479,8 @@ int main(int argc, char** argv) {
         {_ZN3sce2Np9CppWebApi6Common12IntrusivePtrINS1_15ProfanityFilter2V219WebApiFilterRequestEED1Ev, 0},
         {_ZN3sce2Np9CppWebApi6Common12IntrusivePtrINS2_18ResponseHeaderBaseEED1Ev, 0},
         {_ZN3sce2Np9CppWebApi6Common12IntrusivePtrINS2_6StringEED1Ev, 0},
+        {_ZN3sce2Np9CppWebApi6Common12IntrusivePtrINS2_6VectorINS2_6StringEEEED1Ev, StringVectorReferenceCountOffset},
+        {_ZN3sce2Np9CppWebApi6Common12IntrusivePtrINS2_6VectorImEEED1Ev, ScalarVectorReferenceCountOffset},
         {_ZN3sce2Np9CppWebApi6Common12IntrusivePtrINS2_6VectorINS3_INS1_11UserProfile2V113BasicPresenceEEEEEED1Ev, VectorReferenceCountOffset},
         {_ZN3sce2Np9CppWebApi6Common12IntrusivePtrINS1_13InGameCatalog2V57ProductEED1Ev, 0},
         {_ZN3sce2Np9CppWebApi6Common12IntrusivePtrINS1_13InGameCatalog2V59ContainerEED1Ev, 0},
@@ -492,8 +494,6 @@ int main(int argc, char** argv) {
         {_ZN3sce2Np9CppWebApi6Common12IntrusivePtrINS1_11UserProfile2V113BasicPresenceEED1Ev, 0},
         {_ZN3sce2Np9CppWebApi6Common12IntrusivePtrINS1_30CommunicationRestrictionStatus2V338CommunicationRestrictionStatusResponseEED1Ev, 0},
         {_ZN3sce2Np9CppWebApi6Common12IntrusivePtrINS2_6VectorINS3_INS1_11UserProfile2V112BasicProfileEEEEEED1Ev, VectorReferenceCountOffset},
-        {_ZN3sce2Np9CppWebApi6Common12IntrusivePtrINS2_6VectorINS2_6StringEEEED1Ev, StringVectorReferenceCountOffset},
-        {_ZN3sce2Np9CppWebApi6Common12IntrusivePtrINS2_6VectorImEEED1Ev, ScalarVectorReferenceCountOffset},
     };
     for (const auto& testCase : destructors) TestDestroy(testCase);
 
