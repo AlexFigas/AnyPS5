@@ -6280,7 +6280,15 @@ void descriptorPoolResetFailureTest() {
     const auto previous = _ZSt13set_terminatePFvvE_nid_postfix([] {
         std::_Exit(mock.descriptorResetResult == VK_SUCCESS ? 0 : 1);
     });
+#ifdef __APPLE__
+    const auto previousHost = std::set_terminate([] {
+        std::_Exit(mock.descriptorResetResult == VK_SUCCESS ? 0 : 1);
+    });
+#endif
     cache.Free(allocation);
+#ifdef __APPLE__
+    std::set_terminate(previousHost);
+#endif
     _ZSt13set_terminatePFvvE_nid_postfix(previous);
 
 }
@@ -8723,6 +8731,23 @@ void barycentricEmulationTests() {
         for (auto& parameter : flatVertices.fragmentParameters) parameter.flat = true;
         const std::array<CompiledShader, 4> flatPatchShaders{{{ShaderStage::Vertex, &vertex, 0}, {ShaderStage::TessellationControl, &patches.control, 0}, {ShaderStage::TessellationEvaluation, &patches.evaluation, 0}, {ShaderStage::Fragment, &flatVertices, 0}}};
         expectFailure([&] { ValidateProvokingVertex(context, lastState, flatPatchShaders); }, "explicit per-vertex flat interpolation");
+    }
+    {
+        const auto context = mockContext();
+        auto namedVertex = vertex;
+        namedVertex.variantId = 11u;
+        auto namedFragment = fragment;
+        namedFragment.variantId = 12u;
+        const std::array<CompiledShader, 4> namedPatchShaders{{{ShaderStage::Vertex, &namedVertex, 0}, {ShaderStage::TessellationControl, &patches.control, 0}, {ShaderStage::TessellationEvaluation, &patches.evaluation, 0}, {ShaderStage::Fragment, &namedFragment, 0}}};
+        auto lastState = state;
+        lastState.provokingVertexMode = VK_PROVOKING_VERTEX_MODE_LAST_VERTEX_EXT;
+        std::vector<std::uint64_t> firstKey;
+        std::vector<std::uint64_t> lastKey;
+        Require(ValidationKey(context, namedPatchShaders, state, firstKey) && ValidationKey(context, namedPatchShaders, lastState, lastKey), "a draw through generated barycentric tessellation stages skipped the shader validation memo");
+        Require(firstKey != lastKey, "the shader validation memo did not tell barycentric patches built for different provoking vertices apart");
+        const std::array<CompiledShader, 4> unnamedPatchShaders{{{ShaderStage::Vertex, &vertex, 0}, {ShaderStage::TessellationControl, &patches.control, 0}, {ShaderStage::TessellationEvaluation, &patches.evaluation, 0}, {ShaderStage::Fragment, &namedFragment, 0}}};
+        std::vector<std::uint64_t> unnamedKey;
+        Require(!ValidationKey(context, unnamedPatchShaders, state, unnamedKey), "a vertex stage without a variant id entered the shader validation memo");
     }
 
     RecompileResult clipped;
